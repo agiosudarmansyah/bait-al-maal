@@ -1,0 +1,9 @@
+use serde::{Serialize, Deserialize};
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum Categories {
+    Food,
+    Bills,
+    Transportation,
+    Laundry,
+}

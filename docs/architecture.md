@@ -1,0 +1,3 @@
+# ARCHITECTURE
+
+Will be left empty for now...

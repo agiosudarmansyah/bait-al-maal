@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "core",
+    "frb",
+    "tauri_adapter",
+]
+resolver = "3"
