@@ -1,4 +1,3 @@
-use std::io::Error;
 use thiserror::Error;
 use uuid::Uuid;
 
@@ -9,6 +8,8 @@ pub enum AppError {
     IdNotFound { id: Uuid, reason: String },
 
     #[error("Database connection failed")]
-    DatabaseDisconnect(#[from] Error),
+    DatabaseDisconnect(#[from] turso::Error),
 }
+
+pub type Result<T> = std::result::Result<T, AppError>;
 

@@ -1,15 +1,20 @@
 use turso::{ Builder, Connection, Database };
 
 pub struct AppDatabase {
-    db: turso::Database
+    db: Database
 }
 
 /// Need to be revised...
 impl AppDatabase {
-    async fn new() -> Result<(), Box<dyn std::error::Error>> {
-        let db = Builder::new_local("sqlite.db").build().await?;
-        let conn = db.connect()?;
+    pub async fn new() -> std::result::Result<Self, turso::Error> {
+        let db = Builder::new_local("sqlite.db")
+        .build()
+        .await?;
 
-        Ok(())
+        Ok(Self { db })
+    }
+
+    pub fn connection(&self) -> std::result::Result<Connection, turso::Error> {
+        Ok(self.db.connect()?)
     }
 }

@@ -7,4 +7,4 @@ pub use entity::{
     AccountType,
 };
 
-pub use repository::AccountRepository;
+pub use repository::{ AccountRepository, AccountRepositoryTrait};
