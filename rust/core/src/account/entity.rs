@@ -1,4 +1,3 @@
-use std::fmt;
 use serde::{Serialize, Deserialize};
 use uuid::Uuid;
 
@@ -16,12 +15,12 @@ pub struct Account {
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum AccountType {
     Cash,
-    Bank(Bank),
-    EWallet(EWallet),
+    Bank(ProviderBank),
+    EWallet(ProviderEWallet),
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub enum Bank {
+pub enum ProviderBank {
     BCA,
     BRI,
     BSI,
@@ -30,7 +29,7 @@ pub enum Bank {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub enum EWallet {
+pub enum ProviderEWallet {
     Dana,
     GoPay,
     Ovo,
@@ -49,26 +48,6 @@ impl Account {
             icon_key,
             account_type,
             balance
-        }
-    }
-}
-
-impl fmt::Display for AccountType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::Cash => write!(f, "cash"),
-            Self::Bank(bank) => match bank {
-                &Bank::BCA => write!(f, "{}, {}", "Bank", "BCA"),
-                &Bank::BRI => write!(f, "{}, {}", "Bank", "BRI"),
-                &Bank::BSI => write!(f, "{}, {}", "Bank", "BSI"),
-                &Bank::BTN => write!(f, "{}, {}", "Bank", "BTN"),
-                &Bank::Mandiri => write!(f, "{}, {}", "Bank", "Mandiri"),
-            },
-            Self::EWallet(e_wallet) => match e_wallet {
-                &EWallet::Dana => write!(f, "{}, {}", "E-Wallet", "Dana"),
-                &EWallet::GoPay => write!(f, "{}, {}", "E-Wallet", "GoPay"),
-                &EWallet::Ovo => write!(f, "{}, {}", "E-Wallet", "Ovo"),
-            }
         }
     }
 }

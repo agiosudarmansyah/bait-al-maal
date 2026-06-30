@@ -3,11 +3,11 @@ use crate::{
     Account,
     AccountType::{self},
     AccountRepository,
-    AccountRepositoryTrait,
+    TursoAccountRepository,
 };
 
 pub struct AccountService {
-    repository: AccountRepository
+    repository: TursoAccountRepository
 }
 
 impl AccountService {
@@ -25,7 +25,7 @@ impl AccountService {
             balance,
         );
 
-        self.repository.save(&account).await?;
+        self.repository.create(&account).await?;
 
         Ok(())
     }

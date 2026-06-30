@@ -7,4 +7,4 @@ pub use entity::{
     AccountType,
 };
 
-pub use repository::{ AccountRepository, AccountRepositoryTrait};
+pub use repository::{ AccountRepository, TursoAccountRepository};

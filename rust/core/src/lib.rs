@@ -11,7 +11,7 @@ pub use crate::infrastructure::database::AppDatabase;
 pub mod account;
 pub mod analytics;
 pub mod budget;
-pub mod categories;
+pub mod category;
 pub mod user;
 
 pub use crate::error::*;
@@ -20,12 +20,12 @@ pub use crate::account::{
     Account,
     AccountType,
     AccountRepository,
-    AccountRepositoryTrait
+    TursoAccountRepository,
 };
 pub use crate::budget::{
     Budget,
 };
-pub use crate::categories::Categories;
+pub use crate::category::Categories;
 pub use crate::user::UserCredentials;
 
 pub struct Startup {

@@ -1,14 +1,15 @@
 use thiserror::Error;
-use uuid::Uuid;
+use uuid;
 
 /// Custom errors
 #[derive(Error, Debug)]
 pub enum AppError {
-    #[error("Error when fetching specified ID: {id}: {reason}")]
-    IdNotFound { id: Uuid, reason: String },
-
     #[error("Database connection failed")]
     DatabaseDisconnect(#[from] turso::Error),
+
+    #[error("Uuid parse error")]
+    UuidParseError(#[from] uuid::Error),
+
 }
 
 pub type Result<T> = std::result::Result<T, AppError>;
