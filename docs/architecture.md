@@ -48,3 +48,5 @@ The project later migrated to Kotlin + Jetpack Compose because:
 * Better alignment with long-term learning goals
 
 The trade-off is maintaining a separate iOS UI in the future.
+
+Lastly, this project's architecture and documentation were developed through a combination of personal research, official documentation, experimentation, and AI-assisted discussions. All final design decisions and implementation are reviewed and maintained by the project author.
