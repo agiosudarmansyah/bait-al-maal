@@ -1,6 +1,5 @@
 /// Handlers and infrastructures (auth, database, sync) of the app.
 pub mod app_state;
-pub mod error;
 pub mod infrastructure;
 
 use std::sync::Arc;
@@ -14,14 +13,6 @@ pub mod budget;
 pub mod category;
 pub mod user;
 
-pub use crate::error::*;
-
-pub use crate::account::{
-    Account,
-    AccountType,
-    AccountRepository,
-    TursoAccountRepository,
-};
 pub use crate::budget::{
     Budget,
 };
@@ -37,7 +28,7 @@ impl Startup {
         Self { database }
     }
 
-    async fn run(&self) -> Result<()> {
+    async fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
         let conn = self.database.connection()?;
     
         const TABLES: [&str; 4] = [
@@ -55,6 +46,6 @@ impl Startup {
     }
 }
 
-async fn startup(database: Arc<AppDatabase>) -> Result<()> {
+async fn startup(database: Arc<AppDatabase>) -> Result<(), Box<dyn std::error::Error>> {
     Startup::new(database).run().await
 }

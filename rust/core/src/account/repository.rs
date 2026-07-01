@@ -2,13 +2,15 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use uuid::Uuid;
 
-use crate::account::entity::{ProviderBank, ProviderEWallet};
-use crate:: error::*;
-use crate::{
+use crate::account::{
     Account,
+    AccountError,
     AccountType, 
-    AppDatabase,
+    ProviderBank,
+    ProviderEWallet,
+    Result,
 };
+use crate::AppDatabase;
 
 pub struct TursoAccountRepository {
     database: Arc<AppDatabase>
