@@ -5,16 +5,21 @@ use crate::account::{
     AccountError,
     AccountRepository, 
     AccountType::{self}, 
-    TursoAccountRepository,
     Result,
 };
 
-pub struct AccountService {
-    repository: TursoAccountRepository
+pub struct AccountService<R>
+where 
+    R: AccountRepository
+{
+    repository: R
 }
 
-impl AccountService {
-    pub fn new(repository: TursoAccountRepository) -> Self {
+impl<R> AccountService<R>
+where
+    R: AccountRepository
+{
+    pub fn new(repository: R) -> Self {
         Self { repository }
     }
 
