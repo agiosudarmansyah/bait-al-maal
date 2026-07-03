@@ -1,11 +1,12 @@
-use anyhow::{ anyhow, bail,  Result, };
 use uuid::Uuid;
 
 use crate::account::{
     Account, 
+    AccountError,
     AccountRepository, 
     AccountType::{self}, 
     TursoAccountRepository,
+    Result,
 };
 
 pub struct AccountService {
@@ -19,14 +20,14 @@ impl AccountService {
 
     pub async fn get_by_id(&self, id: Uuid) -> Result<Account> {
         if id.is_nil() {
-            bail!("Required UUID is missing");
+            return Err(AccountError::InvalidId)
         }
 
         let account = self
             .repository
             .get_by_id(id)
             .await?
-            .ok_or_else(|| anyhow!("No account was found"))?;
+            .ok_or(AccountError::AccountNotFound)?;
 
         Ok(account)
     }
@@ -58,7 +59,7 @@ impl AccountService {
 
     pub async fn delete(&self, id: Uuid) -> Result<()> {
         if id.is_nil() {
-            bail!("Required UUID is missing")
+            return Err(AccountError::InvalidId)
         }
 
         self.repository.delete(id).await?;

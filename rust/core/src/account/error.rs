@@ -1,18 +1,29 @@
 use thiserror::Error;
-use uuid;
 
 /// Custom errors
 #[derive(Error, Debug)]
 pub enum AccountError {
-    // Repository errors
-    #[error("Uuid parse error")]
-    UuidParseError(#[from] uuid::Error),
+    // Validation
+    #[error("Invalid ID")]
+    InvalidId,
     
-    #[error("Uuid is missing or no input")]
-    UuidNotFound,
+    #[error("Account name cannot be empty")]
+    EmptyName,
 
-    #[error("Database connection failed")]
-    DatabaseDisconnect(#[from] turso::Error),
+    #[error("Account balance cannot be negative")]
+    NegativeBalance,
+
+
+    // Lookup
+    #[error("Account not found")]
+    AccountNotFound,
+
+    // Infrastructure
+    #[error("Invalid stored data")]
+    InvalidStoredData,
+    
+    #[error("Database error")]
+    DatabaseError(#[from] turso::Error),
 }
 
 pub type Result<T> = std::result::Result<T, AccountError>;

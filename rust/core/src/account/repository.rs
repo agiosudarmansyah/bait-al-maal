@@ -38,7 +38,7 @@ fn account_type_to_db(account_type: &AccountType) -> (&'static str, Option<&'sta
     }
 }
 
-// The return value Option<AccountType> should be revised as more items are added.
+// Consider refactoring this function below to return value Result<AccountType>.
 
 fn account_type_from_db(kind: &str, provider: Option<&str>) -> Option<AccountType> {
     match kind {
@@ -63,10 +63,6 @@ fn account_type_from_db(kind: &str, provider: Option<&str>) -> Option<AccountTyp
 
 #[async_trait]
 impl AccountRepository for TursoAccountRepository {
-
-    // The variable account_type for read operations still uses unwrap() method which can cause panic, 
-    // therefore proper error handling in the future is needed.
-
     async fn get_by_id(&self, id: Uuid) -> Result<Option<Account>> {
         let conn = self.database.connection()?;
 
@@ -78,6 +74,8 @@ impl AccountRepository for TursoAccountRepository {
             (id.to_string(),)
         ).await?;
 
+        // Consider making this into a helper function to avoid code duplication with get_all.
+
         if let Some(row) = rows.next().await? {
             let kind: String = row.get(3)?;
             let provider: Option<String> = row.get(4)?;
@@ -85,10 +83,10 @@ impl AccountRepository for TursoAccountRepository {
             let account_type = account_type_from_db(kind.as_str(), provider.as_deref());
 
             let account = Account {
-                id: row.get::<String>(0)?.parse::<Uuid>()?,
+                id: row.get::<String>(0)?.parse::<Uuid>().map_err(|_| AccountError::InvalidStoredData)?,
                 name: row.get(1)?,
                 icon_key: row.get(2)?,
-                account_type: account_type.unwrap(),
+                account_type: account_type.ok_or(AccountError::InvalidStoredData)?,
                 balance: row.get(5)?,
             };
 
@@ -115,10 +113,10 @@ impl AccountRepository for TursoAccountRepository {
             let account_type = account_type_from_db(kind.as_str(), provider.as_deref());
 
             let account = Account {
-                id: row.get::<String>(0)?.parse::<Uuid>()?,
+                id: row.get::<String>(0)?.parse::<Uuid>().map_err(|_| AccountError::InvalidStoredData)?,
                 name: row.get(1)?,
                 icon_key: row.get(2)?,
-                account_type: account_type.unwrap(),
+                account_type: account_type.ok_or(AccountError::InvalidStoredData)?,
                 balance: row.get(5)?,
             };
 
