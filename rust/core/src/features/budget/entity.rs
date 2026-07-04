@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use uuid::Uuid;
 
-use crate::Categories;
+use crate::category::*;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Budget {

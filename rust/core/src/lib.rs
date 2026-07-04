@@ -1,27 +1,15 @@
-/// Handlers and infrastructures (auth, database, sync) of the app.
+pub mod features;
 pub mod app_state;
 pub mod infrastructure;
 
-use std::sync::Arc;
-
+pub use features::*;
 pub use crate::infrastructure::database::AppDatabase;
-
-/// Features
-pub mod account;
-pub mod analytics;
-pub mod budget;
-pub mod category;
-pub mod user;
-
-pub use crate::budget::{
-    Budget,
-};
-pub use crate::category::Categories;
-pub use crate::user::UserCredentials;
 
 pub struct Startup {
     database: Arc<AppDatabase>
 }
+
+use std::sync::Arc;
 
 impl Startup {
     fn new(database: Arc<AppDatabase>) -> Self {
