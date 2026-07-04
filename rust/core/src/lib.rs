@@ -1,6 +1,8 @@
 pub mod features;
-pub mod app_state;
 pub mod infrastructure;
+pub mod shared;
+
+pub mod app_state;
 
 pub use features::*;
 pub use crate::infrastructure::database::AppDatabase;
