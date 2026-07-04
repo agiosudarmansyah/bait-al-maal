@@ -1,13 +1,15 @@
 use serde::{Serialize, Deserialize};
 use uuid::Uuid;
 
+use crate::shared::money::Money;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Account {
   pub id: Uuid,
   pub name: String,
   pub icon_key: String,
   pub account_type: AccountType,
-  pub balance: f64,
+  pub balance: Money,
 }
 
 
@@ -40,7 +42,7 @@ impl Account {
         name: String,
         icon_key: String,
         account_type: AccountType,
-        balance: f64,
+        balance: Money,
     ) -> Self {
         Self {
             id: Uuid::now_v7(),

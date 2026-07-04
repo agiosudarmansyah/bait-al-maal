@@ -7,6 +7,7 @@ use crate::account::{
     AccountType::{self}, 
     Result,
 };
+use crate::shared::money::Money;
 
 pub struct AccountService<R>
 where 
@@ -48,7 +49,7 @@ where
         name: String,
         icon_key: String,
         account_type: AccountType,
-        balance: f64,
+        balance: Money,
     ) -> Result<()> {
         let account = Account::new(
             name,
