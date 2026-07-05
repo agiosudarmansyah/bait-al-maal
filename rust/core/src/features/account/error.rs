@@ -10,6 +10,9 @@ pub enum AccountError {
     #[error("Account name cannot be empty")]
     EmptyName,
 
+    #[error("Passed amount must not be negative or zero")]
+    AmountNotPositive,
+
     #[error("Account balance cannot be negative")]
     NegativeBalance,
 
