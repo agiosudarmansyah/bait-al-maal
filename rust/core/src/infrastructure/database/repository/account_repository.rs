@@ -5,7 +5,6 @@ use uuid::Uuid;
 use crate::account::{
     Account,
     AccountRepository,
-    Result,
 };
 use crate::infrastructure::database::{ 
     AppDatabase,
@@ -14,6 +13,7 @@ use crate::infrastructure::database::{
         account_from_row,
     }
 };
+use crate::shared::error::AppError;
 
 pub struct TursoAccountRepository {
     database: Arc<AppDatabase>
@@ -21,7 +21,7 @@ pub struct TursoAccountRepository {
 
 #[async_trait]
 impl AccountRepository for TursoAccountRepository {
-    async fn get_by_id(&self, id: Uuid) -> Result<Option<Account>> {
+    async fn get_by_id(&self, id: Uuid) -> Result<Option<Account>, AppError> {
         let conn = self.database.connection()?;
 
         let mut rows = conn.query(
@@ -39,7 +39,7 @@ impl AccountRepository for TursoAccountRepository {
         Ok(None)
     }
     
-    async fn get_all(&self) -> Result<Vec<Account>> {
+    async fn get_all(&self) -> Result<Vec<Account>, AppError> {
         let conn = self.database.connection()?;
         let mut accounts = Vec::new();
         
@@ -58,7 +58,7 @@ impl AccountRepository for TursoAccountRepository {
         Ok(accounts)
     }
 
-    async fn create(&self, account: &Account) -> Result<()> {
+    async fn create(&self, account: &Account) -> Result<(), AppError> {
         let conn = self.database.connection()?;
 
         let (kind, provider, amount, currency) = account_to_row(account);
@@ -91,7 +91,7 @@ impl AccountRepository for TursoAccountRepository {
         Ok(())
     }
 
-    async fn delete(&self, id: Uuid) -> Result<()> {
+    async fn delete(&self, id: Uuid) -> Result<(), AppError> {
         let conn = self.database.connection()?;
 
         conn.execute(

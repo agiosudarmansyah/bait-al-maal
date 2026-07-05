@@ -1,7 +1,7 @@
 use thiserror::Error;
 
 /// Custom errors
-#[derive(Error, Debug)]
+#[derive(Error, Debug, Eq, PartialEq)]
 pub enum AccountError {
     // Validation
     #[error("Invalid ID")]
@@ -24,10 +24,7 @@ pub enum AccountError {
     // Infrastructure
     #[error("Invalid stored data")]
     InvalidStoredData,
-    
-    #[error("Database error")]
-    DatabaseError(#[from] turso::Error),
 }
 
-pub type Result<T> = std::result::Result<T, AccountError>;
+pub type AccountResult<T> = std::result::Result<T, AccountError>;
 

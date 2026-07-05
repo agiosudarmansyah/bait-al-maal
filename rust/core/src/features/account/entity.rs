@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use uuid::Uuid;
 
-use crate::account::{ AccountError, Result };
+use crate::account::{ AccountError, AccountResult };
 use crate::shared::money::Money;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -54,7 +54,7 @@ impl Account {
         }
     }
 
-    pub fn rename(&mut self, new_name: String) -> Result<()> {
+    pub fn rename(&mut self, new_name: String) -> AccountResult<()> {
         if new_name == "" {
             return Err(AccountError::EmptyName)
         }
@@ -64,7 +64,7 @@ impl Account {
         Ok(())
     }
 
-    pub fn deposit(&mut self, deposit: i64) -> Result<()> {
+    pub fn deposit(&mut self, deposit: i64) -> AccountResult<()> {
         if deposit <= 0 {
             return Err(AccountError::AmountNotPositive)
         }
@@ -74,7 +74,7 @@ impl Account {
         Ok(())
     }
 
-    pub fn withdraw(&mut self, withdraw: i64) -> Result<()> {
+    pub fn withdraw(&mut self, withdraw: i64) -> AccountResult<()> {
         if withdraw <= 0 {
             return Err(AccountError::AmountNotPositive)
         } else if self.balance.amount < withdraw {

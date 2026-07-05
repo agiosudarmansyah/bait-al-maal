@@ -6,9 +6,9 @@ use crate::account::{
     AccountType, 
     ProviderBank,
     ProviderEWallet,
-    Result,
 };
 use crate::shared::{
+    error::{ Result },
     money::{ Money, Currency },
     sql_enum::SqlEnum,
 };
