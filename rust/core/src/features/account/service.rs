@@ -7,7 +7,7 @@ use crate::account::{
     AccountType::{self}, 
 };
 use crate::shared::{
-    error::{ AppError, Result },
+    error::{ Result },
     money::Money
 };
 
