@@ -1,4 +1,4 @@
-use turso::{ Builder, Connection, Database };
+use sqlx::SqlitePool;
 
 pub struct AppDatabase {
     db: Database
