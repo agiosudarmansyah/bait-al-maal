@@ -5,7 +5,10 @@ use crate::account::{
     AccountError,
     AccountRepository, 
     AccountType::{self}, 
-    Result,
+};
+use crate::shared::{
+    error::{ Result },
+    money::Money
 };
 
 pub struct AccountService<R>
@@ -25,7 +28,7 @@ where
 
     pub async fn get_by_id(&self, id: Uuid) -> Result<Account> {
         if id.is_nil() {
-            return Err(AccountError::InvalidId)
+            return Err(AccountError::InvalidId.into())
         }
 
         let account = self
@@ -48,7 +51,7 @@ where
         name: String,
         icon_key: String,
         account_type: AccountType,
-        balance: f64,
+        balance: Money,
     ) -> Result<()> {
         let account = Account::new(
             name,
@@ -64,7 +67,7 @@ where
 
     pub async fn delete(&self, id: Uuid) -> Result<()> {
         if id.is_nil() {
-            return Err(AccountError::InvalidId)
+            return Err(AccountError::InvalidId.into())
         }
 
         self.repository.delete(id).await?;

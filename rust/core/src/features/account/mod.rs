@@ -12,6 +12,6 @@ pub use entity::{
     ProviderBank,
     ProviderEWallet,
 };
-pub use error::{ AccountError, Result };
+pub use error::{ AccountError, AccountResult };
 pub use repository::AccountRepository;
 pub use service::AccountService;

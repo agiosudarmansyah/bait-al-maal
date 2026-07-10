@@ -1,5 +1,6 @@
 pub mod connection;
-pub mod account_repository;
+pub mod mapper;
+pub mod repository;
 
 pub use connection::AppDatabase;
-pub use account_repository::TursoAccountRepository;
+pub use repository::account_repository::TursoAccountRepository;
