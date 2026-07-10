@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use mockall::automock;
 use uuid::Uuid;
 
 use crate::account::{
@@ -6,6 +7,7 @@ use crate::account::{
 };
 use crate::shared::error::AppError;
 
+#[automock]
 #[async_trait]
 pub trait AccountRepository {
     async fn get_by_id(&self, id: Uuid) -> Result<Option<Account>, AppError>;

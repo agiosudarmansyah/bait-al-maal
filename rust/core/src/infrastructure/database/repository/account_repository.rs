@@ -19,6 +19,12 @@ pub struct TursoAccountRepository {
     database: Arc<AppDatabase>
 }
 
+impl TursoAccountRepository {
+    pub fn new(database: Arc<AppDatabase>) -> Self {
+        Self { database }
+    }
+}
+
 #[async_trait]
 impl AccountRepository for TursoAccountRepository {
     async fn get_by_id(&self, id: Uuid) -> Result<Option<Account>, AppError> {
