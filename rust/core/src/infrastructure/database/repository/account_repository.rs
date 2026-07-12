@@ -134,10 +134,10 @@ impl AccountRepository for SqliteAccountRepository {
 
     async fn delete(&self, id: Uuid) -> Result<()> {
         sqlx::query(
-            "
+            r#"
             DELETE FROM account 
             WHERE ID = ?
-            "
+            "#
         )
         .bind(id.to_string())
         .execute(self.database.pool())
