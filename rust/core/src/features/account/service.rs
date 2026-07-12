@@ -26,22 +26,21 @@ where
         Self { repository }
     }
 
-    pub async fn get_by_id(&self, id: Uuid) -> Result<Account> {
+    pub async fn require_by_id(&self, id: Uuid) -> Result<Account> {
         if id.is_nil() {
             return Err(AccountError::InvalidId.into())
         }
 
         let account = self
             .repository
-            .get_by_id(id)
-            .await?
-            .ok_or(AccountError::AccountNotFound)?;
+            .require_by_id(id)
+            .await?;
 
         Ok(account)
     }
 
     pub async fn get_all(&self) -> Result<Vec<Account>> {
-        let account = self.repository.get_all().await?;
+        let account = self.repository.require_all().await?;
 
         Ok(account)
     }
