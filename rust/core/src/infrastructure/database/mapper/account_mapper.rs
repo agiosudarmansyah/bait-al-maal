@@ -15,7 +15,7 @@ use crate::shared::{
 
 #[derive(sqlx::FromRow)]
 pub struct AccountRow {
-    pub id: String,
+    pub id: Vec<u8>,
     pub name: String,
     pub icon_key: String,
     pub kind: String,
@@ -74,13 +74,13 @@ pub fn account_to_row(account: &Account) -> AccountRow {
     let (kind, provider) = account_type_to_sql(&account.account_type);
     let (amount, currency) = money_to_sql(&account.balance);
 
-    return AccountRow { 
-        id: account.id.to_string(), 
+    AccountRow { 
+        id: account.id.as_bytes().to_vec(), 
         name: account.name.to_string(), 
         icon_key: account.icon_key.to_string(), 
         kind: kind.to_string(), 
         provider: provider.map(str::to_string), 
-        amount: amount, 
+        amount, 
         currency: currency.to_string(), 
     }
 }
@@ -98,8 +98,7 @@ pub fn account_from_row(row: AccountRow) -> Result<Account> {
     )?;
 
     Ok(Account {
-        id: Uuid::parse_str(&row.id)
-            .map_err(|_| AccountError::InvalidStoredData)?,
+        id: Uuid::from_slice(&row.id).map_err(|_| AccountError::InvalidStoredData)?,
         name: row.name,
         icon_key: row.icon_key,
         account_type,
