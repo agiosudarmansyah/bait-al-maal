@@ -1,6 +1,0 @@
-CREATE TABLE IF NOT EXISTS budget (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
-    category TEXT NOT NULL,
-    limit INTEGER NOT NULL
-);

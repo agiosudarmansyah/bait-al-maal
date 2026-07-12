@@ -17,18 +17,9 @@ impl Startup {
     }
 
     async fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
-        const TABLES: [&str; 4] = [
-            include_str!("infrastructure/database/schemas/account.sql"),
-            include_str!("infrastructure/database/schemas/budget.sql"),
-            include_str!("infrastructure/database/schemas/category.sql"),
-            include_str!("infrastructure/database/schemas/transaction.sql")
-        ];
-
-        for table in TABLES {
-            sqlx::query(table)
-            .execute(self.database.pool())
+        sqlx::migrate!()
+            .run(self.database.pool())
             .await?;
-        }
 
         Ok(())
     }

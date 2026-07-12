@@ -18,6 +18,7 @@ sqlx = { version = "0.9", features = [
     "postgres",
     "uuid",
     "chrono",
-    "macros"
+    "macros",
+    "migrate"
 ] }
 tokio = { version = "1", features = ["full"] }
