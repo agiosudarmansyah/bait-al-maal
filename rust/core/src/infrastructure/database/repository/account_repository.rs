@@ -7,70 +7,105 @@ use crate::account::{
     AccountRepository,
 };
 use crate::infrastructure::database::{ 
-    AppDatabase,
+    Database,
     mapper::account_mapper::{
+        AccountRow,
         account_to_row,
         account_from_row,
     }
 };
-use crate::shared::error::AppError;
+use crate::shared::error::{ Result };
 
-pub struct TursoAccountRepository {
-    database: Arc<AppDatabase>
+pub struct SqliteAccountRepository {
+    database: Arc<Database>
 }
 
-impl TursoAccountRepository {
-    pub fn new(database: Arc<AppDatabase>) -> Self {
+impl SqliteAccountRepository {
+    pub fn new(database: Arc<Database>) -> Self {
         Self { database }
     }
 }
 
 #[async_trait]
-impl AccountRepository for TursoAccountRepository {
-    async fn get_by_id(&self, id: Uuid) -> Result<Option<Account>, AppError> {
-        let conn = self.database.connection()?;
-
-        let mut rows = conn.query(
-            "
-            SELECT id, name, icon_key, kind, provider, balance FROM account
+impl AccountRepository for SqliteAccountRepository {
+    async fn find_by_id(&self, id: Uuid) -> Result<Option<Account>> {
+        let row = sqlx::query_as::<_, AccountRow>(
+            r#"
+            SELECT 
+                id,
+                name,
+                icon_key,
+                kind,
+                provider,
+                amount, 
+                currrency
+            FROM account
             WHERE id = ?
-            ",
-            (id.to_string(),)
-        ).await?;
+            "#
+        )
+        .bind(id.to_string())
+        .fetch_optional(self.database.pool())
+        .await?;
 
-        if let Some(row) = rows.next().await? {
-            return Ok(Some(account_from_row(&row)?))
-        }
-
-        Ok(None)
-    }
+        let account_row = row
+            .map(|row| account_from_row(row))
+            .transpose();
     
-    async fn get_all(&self) -> Result<Vec<Account>, AppError> {
-        let conn = self.database.connection()?;
-        let mut accounts = Vec::new();
-        
-        let mut rows = conn.query(
-            "
-            SELECT id, name, icon_key, kind, provider, balance FROM account
-            ", ()
-        ).await?;
-        
-        while let Some(row) = rows.next().await? {
-            let account = account_from_row(&row)?;
+        return account_row
+    }
 
-            accounts.push(account)
-        }
+    async fn require_by_id(&self, id: Uuid) -> Result<Account> {
+        let row = sqlx::query_as::<_, AccountRow>(
+            r#"
+            SELECT
+                id,
+                name,
+                icon_key,
+                kind,
+                provider,
+                amount,
+                currency
+            FROM account
+            WHERE id = ?
+            "#
+        )
+        .bind(id.to_string())
+        .fetch_one(self.database.pool())
+        .await?;
+
+        Ok(account_from_row(row)?)
+    }
+
+    async fn require_all(&self) -> Result<Vec<Account>> {
+        let rows = sqlx::query_as::<_, AccountRow>(
+            r#"
+            SELECT 
+                id,
+                name,
+                icon_key,
+                kind,
+                provider,
+                amount, 
+                currrency
+            FROM account
+            "#
+        )
+        .fetch_all(self.database.pool())
+        .await?;
+
+        let accounts: Vec<Account> = rows
+            .into_iter()
+            .map(|row| account_from_row(row))
+            .collect::<Result<Vec<_>>>()?;
 
         Ok(accounts)
     }
 
-    async fn create(&self, account: &Account) -> Result<(), AppError> {
-        let conn = self.database.connection()?;
+    async fn create(&self, account: &Account) -> Result<()> {
+        let account_row = account_to_row(account);
 
-        let (kind, provider, amount, currency) = account_to_row(account);
-
-        conn.execute(
-            "
+        sqlx::query(
+            r#"
             INSERT INTO account
             (
                 id,
@@ -81,31 +116,32 @@ impl AccountRepository for TursoAccountRepository {
                 amount,
                 currency
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            ", 
-            (
-                account.id.to_string(),
-                account.name.as_str(),
-                account.icon_key.as_str(),
-                kind,
-                provider,
-                amount,
-                currency,
-            ),   
-        ).await?;
+            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
+            "#
+        )
+        .bind(&account_row.id)
+        .bind(&account_row.name)
+        .bind(&account_row.icon_key)
+        .bind(&account_row.kind)
+        .bind(&account_row.provider)
+        .bind(&account_row.amount)
+        .bind(&account_row.currency)
+        .execute(self.database.pool())
+        .await?;
 
         Ok(())
     }
 
-    async fn delete(&self, id: Uuid) -> Result<(), AppError> {
-        let conn = self.database.connection()?;
-
-        conn.execute(
+    async fn delete(&self, id: Uuid) -> Result<()> {
+        sqlx::query(
             "
             DELETE FROM account 
             WHERE ID = ?
-            ", (id.to_string(),)
-        ).await?;
+            "
+        )
+        .bind(id.to_string())
+        .execute(self.database.pool())
+        .await?;
 
         Ok(())
     }

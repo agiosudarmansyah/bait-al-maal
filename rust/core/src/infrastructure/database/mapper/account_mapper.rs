@@ -13,6 +13,17 @@ use crate::shared::{
     sql_enum::SqlEnum,
 };
 
+#[derive(sqlx::FromRow)]
+pub struct AccountRow {
+    pub id: String,
+    pub name: String,
+    pub icon_key: String,
+    pub kind: String,
+    pub provider: Option<String>,
+    pub amount: i64,
+    pub currency: String,
+}
+
 pub fn account_type_to_sql(account_type: &AccountType) -> (&'static str, Option<&'static str>) {
     match account_type {
         AccountType::Cash => ("Cash", None),
@@ -59,29 +70,39 @@ pub fn money_from_sql(amount: i64, currency: &str) -> Result<Money> {
     Ok(Money::new(amount, currency))
 }
 
-pub fn account_to_row(account: &Account) -> (&str, Option<&str>, i64, &'static str) {
+pub fn account_to_row(account: &Account) -> AccountRow {
     let (kind, provider) = account_type_to_sql(&account.account_type);
     let (amount, currency) = money_to_sql(&account.balance);
 
-    (kind, provider, amount, currency)
+    return AccountRow { 
+        id: account.id.to_string(), 
+        name: account.name.to_string(), 
+        icon_key: account.icon_key.to_string(), 
+        kind: kind.to_string(), 
+        provider: provider.map(str::to_string), 
+        amount: amount, 
+        currency: currency.to_string(), 
+    }
 }
 
-pub fn account_from_row(row: &turso::Row) -> Result<Account> {
-    let kind: String = row.get(3)?;
-    let provider: Option<String> = row.get(4)?;
-    let account_type = account_type_from_sql(kind.as_str(), provider.as_deref());
+pub fn account_from_row(row: AccountRow) -> Result<Account> {
+    let account_type = account_type_from_sql(
+        &row.kind,
+        row.provider.as_deref(),
+    )
+    .ok_or(AccountError::InvalidStoredData)?;
 
-    let amount: i64 = row.get(5)?;
-    let currency: String = row.get(6)?;
-    let balance = money_from_sql(amount, &currency)?;
+    let balance = money_from_sql(
+        row.amount,
+        &row.currency,
+    )?;
 
-    let account = Account {
-        id: row.get::<String>(0)?.parse::<Uuid>().map_err(|_| AccountError::InvalidStoredData)?,
-        name: row.get(1)?,
-        icon_key: row.get(2)?,
-        account_type: account_type.ok_or(AccountError::InvalidStoredData)?,
-        balance: balance,
-    };
-
-    Ok(account)
+    Ok(Account {
+        id: Uuid::parse_str(&row.id)
+            .map_err(|_| AccountError::InvalidStoredData)?,
+        name: row.name,
+        icon_key: row.icon_key,
+        account_type,
+        balance,
+    })
 }

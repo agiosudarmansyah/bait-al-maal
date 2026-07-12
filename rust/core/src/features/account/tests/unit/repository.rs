@@ -1,5 +1,5 @@
 use crate::account::{ Account, AccountType };
-use crate::infrastructure::database::TursoAccountRepository;
+use crate::infrastructure::database::SqliteAccountRepository;
 use crate::shared::money::{ Money, Currency };
 
 fn account_new() -> Account {

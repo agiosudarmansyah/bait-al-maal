@@ -1,20 +1,37 @@
 use sqlx::SqlitePool;
 
-pub struct AppDatabase {
-    db: Database
+use crate::shared::error::Result;
+
+pub struct Database {
+    pub pool: SqlitePool
 }
 
-/// Need to be revised...
-impl AppDatabase {
-    pub async fn new() -> std::result::Result<Self, turso::Error> {
-        let db = Builder::new_local("sqlite.db")
-        .build()
-        .await?;
-
-        Ok(Self { db })
+impl Database {
+    pub fn pool(&self) -> &SqlitePool {
+        &self.pool
     }
 
-    pub fn connection(&self) -> std::result::Result<Connection, turso::Error> {
-        Ok(self.db.connect()?)
+    pub fn new(pool: SqlitePool) -> Self {
+        Self { pool }
+    }
+
+    async fn connect_with(url: &str) -> Result<Self> {
+        let pool = SqlitePool::connect(url).await?;
+
+        Ok(Self::new(pool))
+    }
+
+    pub async fn connect() -> Result<Self> {
+        let url = std::env::var("DATABASE_URL")?;
+        Self::connect_with(&url).await
+    }
+
+    pub async fn memory() -> Result<Self> {
+        Self::connect_with("sqlite::memory").await
+    }
+
+    pub async fn test() -> Result<Self> {
+        let url = std::env::var("DATABASE_TEST_URL")?;
+        Self::connect_with(&url).await
     }
 }

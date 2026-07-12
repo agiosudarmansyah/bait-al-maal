@@ -3,22 +3,20 @@ pub mod infrastructure;
 pub mod shared;
 
 pub use features::*;
-pub use crate::infrastructure::database::AppDatabase;
+pub use crate::infrastructure::database::Database;
 
 pub struct Startup {
-    database: Arc<AppDatabase>
+    database: Arc<Database>
 }
 
 use std::sync::Arc;
 
 impl Startup {
-    fn new(database: Arc<AppDatabase>) -> Self {
+    fn new(database: Arc<Database>) -> Self {
         Self { database }
     }
 
     async fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
-        let conn = self.database.connection()?;
-    
         const TABLES: [&str; 4] = [
             include_str!("infrastructure/database/schemas/account.sql"),
             include_str!("infrastructure/database/schemas/budget.sql"),
@@ -27,13 +25,15 @@ impl Startup {
         ];
 
         for table in TABLES {
-            conn.execute(table, ()).await?;
+            sqlx::query(table)
+            .execute(self.database.pool())
+            .await?;
         }
 
         Ok(())
     }
 }
 
-async fn startup(database: Arc<AppDatabase>) -> Result<(), Box<dyn std::error::Error>> {
+async fn startup(database: Arc<Database>) -> Result<(), Box<dyn std::error::Error>> {
     Startup::new(database).run().await
 }
