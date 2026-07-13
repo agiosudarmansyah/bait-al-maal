@@ -27,7 +27,13 @@ impl Database {
     }
 
     pub async fn memory() -> Result<Self> {
-        Self::connect_with("sqlite::memory").await
+        let db = Self::connect_with("sqlite::memory:?cache=shared").await?;
+
+        sqlx::migrate!()
+            .run(db.pool())
+            .await?;
+
+        Ok(db)
     }
 
     pub async fn test() -> Result<Self> {

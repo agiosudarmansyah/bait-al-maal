@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 
 use crate::shared::sql_enum::SqlEnum;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct Money {
     pub amount: i64,
     pub currency: Currency,

@@ -1,24 +1,15 @@
 use crate::account::{
-    Account,
     AccountType,
     AccountError,
 };
-use crate::shared::money::{ Money, Currency };
-
-fn account_new() -> Account {
-    return Account::new(
-        String::from("Aigo Cash"),
-        String::from("Banknote"),
-        AccountType::Cash,
-        Money::new(100_000, Currency::IDR),
-    )
-}
+use crate::account::tests::unit::helper::new_account;
+use crate::shared::money::{ Currency };
 
 // Constructor
 
 #[test]
 fn account_new_creates_account() {
-    let account =  account_new();
+    let account = new_account();
 
     assert_eq!(account.name, "Aigo Cash");
     assert_eq!(account.icon_key, "Banknote");
@@ -31,7 +22,7 @@ fn account_new_creates_account() {
 
 #[test]
 fn account_rename_changes_name() {
-    let mut account = account_new();
+    let mut account = new_account();
 
     let result = account.rename(String::from("Aigo Wallet")) ;
 
@@ -41,7 +32,7 @@ fn account_rename_changes_name() {
 
 #[test]
 fn account_rename_rejects_empty_name() {
-    let mut account = account_new();
+    let mut account = new_account();
 
     let result = account.rename(String::from(""));
 
@@ -50,7 +41,7 @@ fn account_rename_rejects_empty_name() {
 
 #[test]
 fn account_rename_does_not_change_name_on_error() {
-    let mut account = account_new();
+    let mut account = new_account();
 
     let result = account.rename(String::from(""));
 
@@ -62,7 +53,7 @@ fn account_rename_does_not_change_name_on_error() {
 
 #[test]
 fn account_deposit_increases_balance() {
-    let mut account = account_new();
+    let mut account = new_account();
 
     let result = account.deposit(50_000);
 
@@ -72,7 +63,7 @@ fn account_deposit_increases_balance() {
 
 #[test]
 fn account_deposit_rejects_zero() {
-    let mut account = account_new();
+    let mut account = new_account();
 
     let result = account.deposit(0);
 
@@ -81,7 +72,7 @@ fn account_deposit_rejects_zero() {
 
 #[test]
 fn account_deposit_rejects_negative() {
-    let mut account = account_new();
+    let mut account = new_account();
 
     let result = account.deposit(-10_000);
 
@@ -90,7 +81,7 @@ fn account_deposit_rejects_negative() {
 
 #[test]
 fn account_deposit_does_not_change_balance_on_error() {
-    let mut account = account_new();
+    let mut account = new_account();
 
     let result = account.deposit(-10_000);
 
@@ -102,7 +93,7 @@ fn account_deposit_does_not_change_balance_on_error() {
 
 #[test]
 fn account_withdraw_decreases_balance() {
-    let mut account = account_new();
+    let mut account = new_account();
 
     let result = account.withdraw(50_000);
 
@@ -112,7 +103,7 @@ fn account_withdraw_decreases_balance() {
 
 #[test]
 fn account_withdraw_allows_zero_balance() {
-    let mut account = account_new();
+    let mut account = new_account();
 
     let result = account.withdraw(100_000);
 
@@ -122,7 +113,7 @@ fn account_withdraw_allows_zero_balance() {
 
 #[test]
 fn account_withdraw_rejects_zero() {
-    let mut account = account_new();
+    let mut account = new_account();
 
     let result = account.withdraw(0);
 
@@ -131,7 +122,7 @@ fn account_withdraw_rejects_zero() {
 
 #[test]
 fn account_withdraw_rejects_negative() {
-    let mut account = account_new();
+    let mut account = new_account();
 
     let result = account.withdraw(-10_000);
 
@@ -140,7 +131,7 @@ fn account_withdraw_rejects_negative() {
 
 #[test]
 fn account_withdraw_rejects_overdraft() {
-    let mut account = account_new();
+    let mut account = new_account();
 
     let result = account.withdraw(110_000);
 
@@ -150,7 +141,7 @@ fn account_withdraw_rejects_overdraft() {
 
 #[test]
 fn account_withdraw_does_not_change_balance_on_error() {
-    let mut account = account_new();
+    let mut account = new_account();
 
     let result = account.withdraw(150_000);
 
@@ -162,7 +153,7 @@ fn account_withdraw_does_not_change_balance_on_error() {
 
 #[test]
 fn account_deposit_then_withdraw_updates_balance_correctly() {
-    let mut account = account_new();
+    let mut account = new_account();
 
     let result1 = account.deposit(100_000);
     let result2 = account.withdraw(30_000);
@@ -174,7 +165,7 @@ fn account_deposit_then_withdraw_updates_balance_correctly() {
 
 #[test]
 fn account_multiple_deposits_accumulate_balance() {
-    let mut account = account_new();
+    let mut account = new_account();
 
     let result1 = account.deposit(100_000);
     let result2 = account.deposit(50_000);
@@ -188,7 +179,7 @@ fn account_multiple_deposits_accumulate_balance() {
 
 #[test]
 fn account_multiple_withdrawals_update_balance_correctly() {
-    let mut account = account_new();
+    let mut account = new_account();
 
     let result1 = account.withdraw(30_000);
     let result2 = account.withdraw(30_000);

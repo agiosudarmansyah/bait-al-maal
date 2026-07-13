@@ -13,7 +13,10 @@ pub enum Error {
     NotFound,
 
     #[error(transparent)]
-    Database(#[from] sqlx::Error),
+    Sqlx(#[from] sqlx::Error),
+
+    #[error(transparent)]
+    Migration(#[from] sqlx::migrate::MigrateError),
 
     // Other
     #[error(transparent)]
