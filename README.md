@@ -1,25 +1,55 @@
-# From the ashes, we compile...
 
-`Project != nil`, yet it shall be forged anew.
+# BAIT-AL-MAAL
 
-The journey with Rust taught me the essentials of being a programmer. For that, I will always be grateful.
+<p align="center" lang="ar" dir="rtl">
+بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+</p>
 
-I have learned what this project truly needs. Rust is too sacred for this mission and shall be reserved for a higher purpose.
+A cross-platform personal finance application built around a shared Go backend.
 
-The architecture stays.
-The vision stays.
-The implementation evolves.
+## Goals
 
-Welcome, our first contender: Go.
+* Offline-first design
+* Consistent business logic across platforms
+* High performance
+* Maintainable architecture
+* Long-term extensibility
 
-Goodbye, my old friend, Rust.
+## Technology Stack
 
-I hereby begin this rewrite in the name of Allah, the Most Gracious, the Most Merciful.
+* Go (Shared Backend)
+* Kotlin + Jetpack Compose (Android)
+* SQLite
+* Supabase
 
-Sincerely,
+Future:
 
-**Agio**
+* Web landing page
+* Vue + Tauri (Desktop)
+* SwiftUI (iOS)
 
-> Execute Order 6O.
+## Repository Structure
 
-*(This sounds corny. Don't judge me—I needed the dramatic effect.)*
+```text
+frontend/
+    android/
+
+backend/
+    cmd/
+    internal/
+
+docs/
+
+supabase/
+```
+
+## Documentation
+
+Future documentation rewrite is still being cooked.
+
+## Project Status
+
+Current version is pre-1.0.
+
+The project is undergoing a complete rewrite before its first public release.
+Breaking changes are expected while the architecture continues to evolve.
