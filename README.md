@@ -1,56 +1,25 @@
-# BAIT-AL-MAAL
+# From the ashes, we compile...
 
-Bismillahirrahmaanirrahiim
+`Project != nil`, yet it shall be forged anew.
 
-A cross-platform personal finance application built around a shared Rust core.
+The journey with Rust taught me the essentials of being a programmer. For that, I will always be grateful.
 
-## Goals
+I have learned what this project truly needs. Rust is too sacred for this mission and shall be reserved for a higher purpose.
 
-* High performance
-* Consistent business logic across platforms
-* Offline-first design
-* Maintainable architecture
-* Long-term extensibility
+The architecture stays.
+The vision stays.
+The implementation evolves.
 
-## Technology Stack
+Welcome, our first contender: Go.
 
-* Rust (Business Logic)
-* Kotlin + Jetpack Compose (Android)
-* Tauri (Desktop)
-* SQLite / Turso
+Goodbye, my old friend, Rust.
 
-Future:
+I hereby begin this rewrite in the name of Allah, the Most Gracious, the Most Merciful.
 
-* SwiftUI (iOS)
-* Cloud synchronization
-* Web landing page
+Sincerely,
 
-## Repository Structure
+**Agio**
 
-```text
-apps/
-    android/
-    desktop/
+> Execute Order 6O.
 
-rust/
-    core/
-
-docs/
-
-cloud/
-```
-
-## Documentation
-
-* architecture.md
-* development.md
-* roadmap.md
-* contributing.md
-* git-workflow.md
-* docs/decisions/
-
-## Project Status
-
-Current version is pre-1.0.
-
-Breaking changes are expected while the architecture continues to evolve.
+*(This sounds corny. Don't judge me—I needed the dramatic effect.)*

@@ -1,6 +1,0 @@
-[workspace]
-members = [
-    "core",
-    "tauri_adapter",
-]
-resolver = "3"
