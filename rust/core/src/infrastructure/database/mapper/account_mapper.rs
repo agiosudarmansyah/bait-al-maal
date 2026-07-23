@@ -1,15 +1,9 @@
 use uuid::Uuid;
 
-use crate::account::{
-    Account,
-    AccountError,
-    AccountType, 
-    ProviderBank,
-    ProviderEWallet,
-};
+use crate::account::{Account, AccountError, AccountType, ProviderBank, ProviderEWallet};
 use crate::shared::{
-    error::{ Result },
-    money::{ Money, Currency },
+    error::{Error, Result},
+    money::{Currency, Money},
     sql_enum::SqlEnum,
 };
 
@@ -38,30 +32,28 @@ pub fn account_type_to_sql(account_type: &AccountType) -> (&'static str, Option<
     }
 }
 
-// Consider refactoring this function below to return value Result<AccountType>.
-
-pub fn account_type_from_sql(kind: &str, provider: Option<&str>) -> Option<AccountType> {
+pub fn account_type_from_sql(kind: &str, provider: Option<&str>) -> Result<AccountType> {
     match kind {
-        "Cash" => Some(AccountType::Cash),
+        "Cash" => Ok(AccountType::Cash),
         "Bank" => match provider {
-            Some("BCA") => Some(AccountType::Bank(ProviderBank::BCA)),
-            Some("BRI") => Some(AccountType::Bank(ProviderBank::BRI)),
-            Some("BSI") => Some(AccountType::Bank(ProviderBank::BSI)),
-            Some("BTN") => Some(AccountType::Bank(ProviderBank::BTN)),
-            Some("Mandiri") => Some(AccountType::Bank(ProviderBank::Mandiri)),
-            _ => None,
+            Some("BCA") => Ok(AccountType::Bank(ProviderBank::BCA)),
+            Some("BRI") => Ok(AccountType::Bank(ProviderBank::BRI)),
+            Some("BSI") => Ok(AccountType::Bank(ProviderBank::BSI)),
+            Some("BTN") => Ok(AccountType::Bank(ProviderBank::BTN)),
+            Some("Mandiri") => Ok(AccountType::Bank(ProviderBank::Mandiri)),
+            _ => Err(Error::Account(AccountError::InvalidStoredData)),
         },
         "E-Wallet" => match provider {
-            Some("Dana") => Some(AccountType::EWallet(ProviderEWallet::Dana)),
-            Some("GoPay") => Some(AccountType::EWallet(ProviderEWallet::GoPay)),
-            Some("Ovo") => Some(AccountType::EWallet(ProviderEWallet::Ovo)),
-            _ => None,
+            Some("Dana") => Ok(AccountType::EWallet(ProviderEWallet::Dana)),
+            Some("GoPay") => Ok(AccountType::EWallet(ProviderEWallet::GoPay)),
+            Some("Ovo") => Ok(AccountType::EWallet(ProviderEWallet::Ovo)),
+            _ => Err(Error::Account(AccountError::InvalidStoredData)),
         },
-        _ => None,
+        _ => Err(Error::Account(AccountError::InvalidStoredData)),
     }
 }
 
-pub fn money_to_sql (money: &Money) -> (i64, &'static str) {
+pub fn money_to_sql(money: &Money) -> (i64, &'static str) {
     (money.amount, money.currency.to_sql())
 }
 
@@ -74,28 +66,21 @@ pub fn account_to_row(account: &Account) -> AccountRow {
     let (kind, provider) = account_type_to_sql(&account.account_type);
     let (amount, currency) = money_to_sql(&account.balance);
 
-    AccountRow { 
-        id: account.id.as_bytes().to_vec(), 
-        name: account.name.to_string(), 
-        icon_key: account.icon_key.to_string(), 
-        kind: kind.to_string(), 
-        provider: provider.map(str::to_string), 
-        amount, 
-        currency: currency.to_string(), 
+    AccountRow {
+        id: account.id.as_bytes().to_vec(),
+        name: account.name.to_string(),
+        icon_key: account.icon_key.to_string(),
+        kind: kind.to_string(),
+        provider: provider.map(str::to_string),
+        amount,
+        currency: currency.to_string(),
     }
 }
 
 pub fn account_from_row(row: AccountRow) -> Result<Account> {
-    let account_type = account_type_from_sql(
-        &row.kind,
-        row.provider.as_deref(),
-    )
-    .ok_or(AccountError::InvalidStoredData)?;
+    let account_type = account_type_from_sql(&row.kind, row.provider.as_deref())?;
 
-    let balance = money_from_sql(
-        row.amount,
-        &row.currency,
-    )?;
+    let balance = money_from_sql(row.amount, &row.currency)?;
 
     Ok(Account {
         id: Uuid::from_slice(&row.id).map_err(|_| AccountError::InvalidStoredData)?,
