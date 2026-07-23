@@ -14,7 +14,7 @@ use crate::infrastructure::database::{
         account_from_row,
     }
 };
-use crate::shared::error::{ Result };
+use crate::shared::error::{ Error, Result };
 
 pub struct SqliteAccountRepository {
     database: Arc<Database>
@@ -38,12 +38,12 @@ impl AccountRepository for SqliteAccountRepository {
                 kind,
                 provider,
                 amount, 
-                currrency
+                currency
             FROM account
             WHERE id = ?
             "#
         )
-        .bind(id.to_string())
+        .bind(id.as_bytes().to_vec())
         .fetch_optional(self.database.pool())
         .await?;
 
@@ -51,29 +51,13 @@ impl AccountRepository for SqliteAccountRepository {
             .map(|row| account_from_row(row))
             .transpose();
     
-        return account_row
+        account_row
     }
 
     async fn require_by_id(&self, id: Uuid) -> Result<Account> {
-        let row = sqlx::query_as::<_, AccountRow>(
-            r#"
-            SELECT
-                id,
-                name,
-                icon_key,
-                kind,
-                provider,
-                amount,
-                currency
-            FROM account
-            WHERE id = ?
-            "#
-        )
-        .bind(id.to_string())
-        .fetch_one(self.database.pool())
-        .await?;
-
-        Ok(account_from_row(row)?)
+        self.find_by_id(id)
+            .await?
+            .ok_or(Error::NotFound)
     }
 
     async fn require_all(&self) -> Result<Vec<Account>> {
@@ -86,7 +70,7 @@ impl AccountRepository for SqliteAccountRepository {
                 kind,
                 provider,
                 amount, 
-                currrency
+                currency
             FROM account
             "#
         )
@@ -133,15 +117,19 @@ impl AccountRepository for SqliteAccountRepository {
     }
 
     async fn delete(&self, id: Uuid) -> Result<()> {
-        sqlx::query(
+        let result = sqlx::query(
             r#"
             DELETE FROM account 
             WHERE ID = ?
             "#
         )
-        .bind(id.to_string())
+        .bind(id.as_bytes().to_vec())
         .execute(self.database.pool())
         .await?;
+
+        if result.rows_affected() == 0 {
+            return Err(Error::NotFound)
+        }
 
         Ok(())
     }

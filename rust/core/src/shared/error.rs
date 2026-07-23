@@ -9,8 +9,14 @@ pub enum Error {
     Account(#[from] AccountError),
 
     //Infrastructure
+    #[error("Requested resource was not found")]
+    NotFound,
+
     #[error(transparent)]
-    Database(#[from] sqlx::Error),
+    Sqlx(#[from] sqlx::Error),
+
+    #[error(transparent)]
+    Migration(#[from] sqlx::migrate::MigrateError),
 
     // Other
     #[error(transparent)]

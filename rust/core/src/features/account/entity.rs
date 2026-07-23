@@ -4,7 +4,7 @@ use uuid::Uuid;
 use crate::account::{ AccountError, AccountResult };
 use crate::shared::money::Money;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq)]
 pub struct Account {
   pub id: Uuid,
   pub name: String,
